@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/NsdHSO/quiz-backend/compare/v1.0.0...v1.1.0) (2025-11-17)
+
+
+### Features
+
+* 🎸 added /grapqql ([5012db8](https://github.com/NsdHSO/quiz-backend/commit/5012db8d9ef6199dd196c3bd4d8abc31dec31d62))
+
 # 1.0.0 (2025-11-17)
 
 
