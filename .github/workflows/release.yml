@@ -51,7 +51,7 @@ jobs:
               }],
               ["@semantic-release/github", {
                 "assets": [
-                  {"path": "target/release/emergency", "label": "Binary (Linux)"}
+                  {"path": "target/release/quizzy-backend", "label": "Binary (Linux)"}
                 ]
               }],
               ["@semantic-release/git", {
