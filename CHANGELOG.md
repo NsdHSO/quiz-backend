@@ -1,3 +1,15 @@
+# 1.0.0 (2025-11-17)
+
+
+### Features
+
+* 🎸 added quizzy-backend ([3a6ac82](https://github.com/NsdHSO/quiz-backend/commit/3a6ac827a858cd604e570789e0ccc5103162f3a6))
+* 🎸 added the service and boilerplate with doppler project ([b90cc36](https://github.com/NsdHSO/quiz-backend/commit/b90cc36ba4c37a242b16d5155d20dce1f09af36e))
+* 🎸 init commit ([638cb8f](https://github.com/NsdHSO/quiz-backend/commit/638cb8fa8510cc906e79e2df9475b5744ef6ccd7))
+* 🎸 init the grapqhl ([4f21986](https://github.com/NsdHSO/quiz-backend/commit/4f21986f6c10cfccbd0379bd928341a1f9d723ed))
+* 🎸 remove unused detalis ([73e5085](https://github.com/NsdHSO/quiz-backend/commit/73e5085242816ebb835caa5b4feb46a3ad4ed0ed))
+* 🎸 tried to deploy on 2001 ([10ef036](https://github.com/NsdHSO/quiz-backend/commit/10ef036a5ae95030d02b38f2c053868fb32cc207))
+
 # [1.29.0](https://github.com/NsdHSO/hospital/compare/v1.28.0...v1.29.0) (2025-10-04)
 
 
