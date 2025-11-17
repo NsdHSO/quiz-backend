@@ -4,10 +4,8 @@ fn get_env_var(var_name: &str) -> String {
 }
 #[derive(Debug, Clone)]
 pub struct ConfigService {
-    pub rust_log: String,
     pub host: String,
     pub port: u16,
-    pub app_env: String,
     pub database_url: String,
     pub auth_base_url: String,
     pub access_token_public_key: String,
@@ -62,19 +60,6 @@ impl ConfigService {
         let project = "quiz";
         let doppler_env = get_env_var("DOPPLER_ENV");
 
-        // Fetch all secrets concurrently - clone config for each future
-        let config_clone = config.clone();
-        let rust_log_future = async {
-            let secret = default_api::secrets_get(&config_clone, project, &doppler_env, "RUST_LOG")
-                .await
-                .expect("Failed to get RUST_LOG from Doppler");
-            secret
-                .value
-                .as_ref()
-                .map(|v| v.computed.clone())
-                .expect("RUST_LOG value not found in Doppler")
-        };
-
         let config_clone = config.clone();
         let host_future = async {
             let secret = default_api::secrets_get(&config_clone, project, &doppler_env, "HOST")
@@ -122,32 +107,6 @@ impl ConfigService {
                 .as_ref()
                 .map(|v| v.computed.clone())
                 .expect("DATABASE_URL value not found in Doppler")
-        };
-
-        let config_clone = config.clone();
-        let prod_db_future = async {
-            let secret =
-                default_api::secrets_get(&config_clone, project, &doppler_env, "PROD_DATABASE_URL")
-                    .await
-                    .expect("Failed to get PROD_DATABASE_URL from Doppler");
-            secret
-                .value
-                .as_ref()
-                .map(|v| v.computed.clone())
-                .expect("PROD_DATABASE_URL value not found in Doppler")
-        };
-
-        let config_clone = config.clone();
-        let uat_db_future = async {
-            let secret =
-                default_api::secrets_get(&config_clone, project, &doppler_env, "DATABASE_URL_UAT")
-                    .await
-                    .expect("Failed to get DATABASE_URL_UAT from Doppler");
-            secret
-                .value
-                .as_ref()
-                .map(|v| v.computed.clone())
-                .expect("DATABASE_URL_UAT value not found in Doppler")
         };
 
         let config_clone = config.clone();
@@ -210,20 +169,16 @@ impl ConfigService {
         };
 
         let (
-            rust_log,
             host,
             port_str,
-            app_env,
             database_url,
             auth_base_url,
             access_token_public_key,
             sqlx_log,
             strapi_api_url,
         ) = tokio::join!(
-            rust_log_future,
             host_future,
             port_future,
-            app_env_future,
             database_url_future,
             auth_url_future,
             access_token_future,
@@ -232,10 +187,8 @@ impl ConfigService {
         );
 
         ConfigService {
-            rust_log: rust_log.unwrap(),
             host: host.unwrap(),
             port: port_str.expect("PORT NOT FOUND").parse::<u16>().unwrap(),
-            app_env: app_env.unwrap(),
             database_url: database_url.expect("Database_URL not found"),
             auth_base_url: auth_base_url.expect("AUTH_BASE_URL not found")   ,
             access_token_public_key: access_token_public_key.unwrap(),
