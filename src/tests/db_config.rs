@@ -86,7 +86,9 @@ pub async fn setup_test_db() -> DatabaseConnection {
                 Ok(db) => db,
                 Err(e) => {
                     // If we still can't connect, panic with a helpful message
-                    panic!("Cannot connect to any database for testing. Make sure you have a database available or Docker running. Error: {e}");
+                    panic!(
+                        "Cannot connect to any database for testing. Make sure you have a database available or Docker running. Error: {e}"
+                    );
                 }
             }
         }

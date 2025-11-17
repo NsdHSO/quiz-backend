@@ -11,8 +11,7 @@ use serde::Deserialize;
 /// This struct is used to deserialize the token's payload. The fields are
 /// derived from the standard JWT claims, with custom fields for permissions
 /// and roles.
-#[derive(Debug, Deserialize)]
-#[derive(Clone)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TokenClaims {
     /// The subject of the token, typically a user's unique identifier.
     sub: String,

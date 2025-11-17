@@ -1,4 +1,3 @@
-
 use actix_web::{web, HttpResponse};
 use reqwest::Client;
 
@@ -6,7 +5,7 @@ use crate::components::config::ConfigService;
 
 /// Proxy handler: Forwards all GraphQL POST requests to Strapi
 pub async fn graphql_handler(body: web::Bytes, cfg: web::Data<ConfigService>) -> HttpResponse {
-    let strapi_url = cfg.strapi_api_url.clone()+"/graphql";
+    let strapi_url = cfg.strapi_api_url.clone() + "/graphql";
     let client = Client::new();
     let resp = client
         .post(strapi_url)

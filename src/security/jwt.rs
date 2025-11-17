@@ -6,8 +6,8 @@ use crate::http_response::HttpCodeW;
 use actix_web::body::EitherBody;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::{http::header::AUTHORIZATION, Error, HttpMessage, HttpResponse};
-use reqwest::Client;
 use futures_util::future::LocalBoxFuture;
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
@@ -99,7 +99,9 @@ where
             let url = format!("{}/v1/auth/introspect", auth_base_url.trim_end_matches('/'));
             let resp = client
                 .post(&url)
-                .json(&IntrospectRequest { token: token.clone() })
+                .json(&IntrospectRequest {
+                    token: token.clone(),
+                })
                 .send()
                 .await
                 .map_err(|e| {

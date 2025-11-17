@@ -32,9 +32,10 @@ async fn main() -> std::io::Result<()> {
     let cfg: ConfigService = ConfigService::new().await;
 
     // Initialize DB using clones so cfg remains usable
-    let conn: sea_orm::DatabaseConnection = db::config::init(cfg.database_url.clone(), cfg.sqlx_log)
-        .await
-        .expect("Failed to initialize database connection");
+    let conn: sea_orm::DatabaseConnection =
+        db::config::init(cfg.database_url.clone(), cfg.sqlx_log)
+            .await
+            .expect("Failed to initialize database connection");
 
     // Logging
     Builder::from_env(Env::default().default_filter_or("debug"))
@@ -77,7 +78,11 @@ async fn main() -> std::io::Result<()> {
             .allowed_origin("https://tevet-troc-client.vercel.app")
             .allowed_origin("https://nsdhso.github.io")
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-            .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION])
+            .allowed_headers(vec![
+                header::CONTENT_TYPE,
+                header::ACCEPT,
+                header::AUTHORIZATION,
+            ])
             .supports_credentials();
 
         App::new()
@@ -88,13 +93,12 @@ async fn main() -> std::io::Result<()> {
             .app_data(decoding_key_data.clone())
             .wrap(Logger::default())
             .service(
-                web::scope("/v1")
-                    .service(
-                        web::scope("")
-                            // auth_base_url was cloned outside; we can clone the String again here
-                            .wrap(JwtAuth::new(auth_base_url.clone()))
-                            .configure(components::graphql::init_routes)
-                    )
+                web::scope("/v1").service(
+                    web::scope("")
+                        // auth_base_url was cloned outside; we can clone the String again here
+                        .wrap(JwtAuth::new(auth_base_url.clone()))
+                        .configure(components::graphql::init_routes),
+                ),
             )
     });
 

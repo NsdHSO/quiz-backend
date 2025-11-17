@@ -23,7 +23,7 @@ pub struct Model {
     pub updated_at: DateTime,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[sea_orm(ignore)]
-    pub search_tsv: Option<String>
+    pub search_tsv: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -5,18 +5,30 @@ use std::fmt::{Display, Formatter};
 /// These map to the `auth.permissions.code` values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PermissionCode {
-    #[serde(rename = "user.read")]         UserRead,
-    #[serde(rename = "user.write")]        UserWrite,
-    #[serde(rename = "session.read")]      SessionRead,
-    #[serde(rename = "session.terminate")] SessionTerminate,
-    #[serde(rename = "token.read")]        TokenRead,
-    #[serde(rename = "token.revoke")]      TokenRevoke,
-    #[serde(rename = "project.read")]      ProjectRead,
-    #[serde(rename = "project.write")]     ProjectWrite,
-    #[serde(rename = "project.delete")]    ProjectDelete,
-    #[serde(rename = "appointment.create")] AppointmentCreate,
-    #[serde(rename = "appointment.read")]   AppointmentRead,
-    #[serde(rename = "appointment.update")] AppointmentUpdate,
+    #[serde(rename = "user.read")]
+    UserRead,
+    #[serde(rename = "user.write")]
+    UserWrite,
+    #[serde(rename = "session.read")]
+    SessionRead,
+    #[serde(rename = "session.terminate")]
+    SessionTerminate,
+    #[serde(rename = "token.read")]
+    TokenRead,
+    #[serde(rename = "token.revoke")]
+    TokenRevoke,
+    #[serde(rename = "project.read")]
+    ProjectRead,
+    #[serde(rename = "project.write")]
+    ProjectWrite,
+    #[serde(rename = "project.delete")]
+    ProjectDelete,
+    #[serde(rename = "appointment.create")]
+    AppointmentCreate,
+    #[serde(rename = "appointment.read")]
+    AppointmentRead,
+    #[serde(rename = "appointment.update")]
+    AppointmentUpdate,
 }
 
 impl PermissionCode {

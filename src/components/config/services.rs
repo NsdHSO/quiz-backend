@@ -11,7 +11,6 @@ pub struct ConfigService {
     pub access_token_public_key: String,
     pub sqlx_log: bool,
     pub strapi_api_url: String,
-
 }
 
 impl ConfigService {
@@ -55,7 +54,6 @@ impl ConfigService {
         let mut config = Configuration::new();
         config.bearer_access_token =
             Some(std::env::var("DOPPLER_TOKEN").expect("DOPPLER_TOKEN must be set"));
-
 
         let project = "quiz";
         let doppler_env = get_env_var("DOPPLER_ENV");
@@ -151,16 +149,12 @@ impl ConfigService {
                 .expect("SQLX_LOG value not found in Doppler")
         };
 
-            let config_clone = config.clone();
-            let strapi_api_future = async {
-            let secret = default_api::secrets_get(
-                &config_clone,
-                project,
-                &doppler_env,
-                "STRAPI_API",
-            )
-            .await
-            .expect("Failed to get API from Doppler");
+        let config_clone = config.clone();
+        let strapi_api_future = async {
+            let secret =
+                default_api::secrets_get(&config_clone, project, &doppler_env, "STRAPI_API")
+                    .await
+                    .expect("Failed to get API from Doppler");
             secret
                 .value
                 .as_ref()
@@ -190,10 +184,10 @@ impl ConfigService {
             host: host.unwrap(),
             port: port_str.expect("PORT NOT FOUND").parse::<u16>().unwrap(),
             database_url: database_url.expect("Database_URL not found"),
-            auth_base_url: auth_base_url.expect("AUTH_BASE_URL not found")   ,
+            auth_base_url: auth_base_url.expect("AUTH_BASE_URL not found"),
             access_token_public_key: access_token_public_key.unwrap(),
             sqlx_log: sqlx_log.unwrap().parse().unwrap(),
-            strapi_api_url: strapi_api_url.expect("STRAPI_API is not defined in secrets")
+            strapi_api_url: strapi_api_url.expect("STRAPI_API is not defined in secrets"),
         }
     }
 }

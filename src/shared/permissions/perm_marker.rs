@@ -1,6 +1,6 @@
 use crate::http_response::error_handler::CustomError;
 use crate::http_response::{Claims, HttpCodeW};
-use crate::shared::{PermissionCode, Require};
+use crate::shared::Require;
 use actix_web::dev::Payload;
 use actix_web::{FromRequest, HttpRequest};
 use futures_util::future::{ready, Ready};
