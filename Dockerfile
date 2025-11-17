@@ -18,5 +18,5 @@ RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/
 WORKDIR /app
 COPY --from=builder /usr/src/app/target/release/quizzy-backend .
 
-EXPOSE 5000
+EXPOSE 2001
 CMD ["./quizzy-backend"]
