@@ -12,6 +12,8 @@ pub struct ConfigService {
     pub auth_base_url: String,
     pub access_token_public_key: String,
     pub sqlx_log: bool,
+    pub strapi_api_url: String,
+
 }
 
 impl ConfigService {
@@ -190,6 +192,23 @@ impl ConfigService {
                 .expect("SQLX_LOG value not found in Doppler")
         };
 
+            let config_clone = config.clone();
+            let strapi_api_future = async {
+            let secret = default_api::secrets_get(
+                &config_clone,
+                project,
+                &doppler_env,
+                "STRAPI_API",
+            )
+            .await
+            .expect("Failed to get API from Doppler");
+            secret
+                .value
+                .as_ref()
+                .map(|v| v.computed.clone())
+                .expect("API value not found in Doppler")
+        };
+
         let (
             rust_log,
             host,
@@ -199,6 +218,7 @@ impl ConfigService {
             auth_base_url,
             access_token_public_key,
             sqlx_log,
+            strapi_api_url,
         ) = tokio::join!(
             rust_log_future,
             host_future,
@@ -207,7 +227,8 @@ impl ConfigService {
             database_url_future,
             auth_url_future,
             access_token_future,
-            sqlx
+            sqlx,
+            strapi_api_future
         );
 
         ConfigService {
@@ -219,6 +240,7 @@ impl ConfigService {
             auth_base_url: auth_base_url.expect("AUTH_BASE_URL not found")   ,
             access_token_public_key: access_token_public_key.unwrap(),
             sqlx_log: sqlx_log.unwrap().parse().unwrap(),
+            strapi_api_url: strapi_api_url.expect("STRAPI_API is not defined in secrets")
         }
     }
 }

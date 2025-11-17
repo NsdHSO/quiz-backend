@@ -30,5 +30,6 @@ rust_decimal = "1.37.2"
 jsonwebtoken = { version = "10.0.0", features = ["rust_crypto"] }
 base64 = "0.22.1"
 doppler-rs = "0.0.2"
-reqwest = { version = "0.12", features = ["rustls-tls", "json"] }
+reqwest = { version = "0.12", features = ["rustls-tls", "json", "blocking"] }
 juniper = "0.17.0"
+juniper_actix = "0.4.0"

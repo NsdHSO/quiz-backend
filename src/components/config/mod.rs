@@ -1,3 +1,3 @@
 mod services;
 
-pub use services::*;
+pub use services::ConfigService;

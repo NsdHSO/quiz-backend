@@ -1,3 +1,5 @@
+// src/main.rs
+
 use crate::components::config::ConfigService;
 use crate::security::jwt::JwtAuth;
 use actix_cors::Cors;
@@ -11,7 +13,6 @@ use dotenv::dotenv;
 use env_logger::{Builder, Env};
 use jsonwebtoken::DecodingKey;
 use listenfd::ListenFd;
-use log::error;
 use utoipa_swagger_ui::SwaggerUi;
 
 mod components;
@@ -22,13 +23,20 @@ mod security;
 mod shared;
 mod tests;
 mod utils;
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let cfg = ConfigService::new().await;
-    let conn: sea_orm::DatabaseConnection = db::config::init(cfg.database_url, cfg.sqlx_log)
+
+    // Build config once
+    let cfg: ConfigService = ConfigService::new().await;
+
+    // Initialize DB using clones so cfg remains usable
+    let conn: sea_orm::DatabaseConnection = db::config::init(cfg.database_url.clone(), cfg.sqlx_log)
         .await
-        .expect("Failed to initialize database connection"); // Initialize connection here
+        .expect("Failed to initialize database connection");
+
+    // Logging
     Builder::from_env(Env::default().default_filter_or("debug"))
         .format(|buf, record| {
             use std::io::Write;
@@ -45,13 +53,23 @@ async fn main() -> std::io::Result<()> {
         .init();
 
     let mut listened = ListenFd::from_env();
-    let auth_base_url = cfg.auth_base_url;
+
+    // Extract needed cfg fields as owned clones BEFORE the closure
+    let auth_base_url = cfg.auth_base_url.clone();
+    let host = cfg.host.clone();
+    let port = cfg.port;
+
+    // Build decoding key from cfg
     let pem_bytes = STANDARD
-        .decode(cfg.access_token_public_key)
+        .decode(&cfg.access_token_public_key)
         .expect("ACCESS_TOKEN_PUBLIC_KEY is not valid base64");
     let decoding_key =
         DecodingKey::from_rsa_pem(&pem_bytes).expect("ACCESS_TOKEN_PUBLIC_KEY is not a valid PEM");
-            let data_base_conn = conn.clone();
+
+    // Shared state wrapped in web::Data (Arc) so we can cheaply clone inside the closure
+    let db_data = web::Data::new(conn.clone());
+    let cfg_data = web::Data::new(cfg.clone());
+    let decoding_key_data = web::Data::new(decoding_key.clone());
 
     let mut server = HttpServer::new(move || {
         let cors = Cors::default()
@@ -62,19 +80,20 @@ async fn main() -> std::io::Result<()> {
             .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION])
             .supports_credentials();
 
-
         App::new()
             .wrap(cors)
-            .app_data(web::Data::new(data_base_conn.clone()))
+            // Clone the Arc wrappers for each new App instance
+            .app_data(db_data.clone())
+            .app_data(cfg_data.clone())
+            .app_data(decoding_key_data.clone())
             .wrap(Logger::default())
             .service(
                 web::scope("/v1")
-                    // Public routes can be added here before the protected scope if needed
                     .service(
                         web::scope("")
+                            // auth_base_url was cloned outside; we can clone the String again here
                             .wrap(JwtAuth::new(auth_base_url.clone()))
-                            .app_data(web::Data::new(decoding_key.clone()))
-                            // .configure(components::ambulance::init_routes)
+                            .configure(components::graphql::init_routes)
                     )
             )
     });
@@ -82,8 +101,7 @@ async fn main() -> std::io::Result<()> {
     server = match listened.take_tcp_listener(0)? {
         Some(listener) => server.listen(listener)?,
         None => {
-            let host = cfg.host;
-            let port = cfg.port;
+            // Use previously cloned host/port; no borrowing from cfg here
             server
                 .bind(format!("{host}:{port}"))
                 .unwrap_or_else(|_| panic!("host: {host}> Port {port}"))
